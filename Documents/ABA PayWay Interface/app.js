@@ -15,7 +15,7 @@ async function generateQRCode() {
 
 // 2. Connect to WebSocket
 function connectWebSocket() {
-    const socket = new SockJS('http://localhost:8080/ws-payment'); // Match your WebSocket endpoint
+    const socket = new SockJS('http://localhost:8080/ws-payment');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
@@ -28,10 +28,10 @@ function connectWebSocket() {
                 document.getElementById('status-message').textContent = "Payment succeeded! Redirecting...";
                 document.getElementById('status-message').style.color = "green";
 
-                // Notify for 3 seconds before redirecting
+                // Notify for 1.5 seconds before redirecting
                 setTimeout(function () {
                     window.location.href = "./success-page.html"; // Redirect to success page
-                }, 1500); // 3000 milliseconds = 3 seconds
+                }, 1500); // 1500 milliseconds = 1.5 seconds
             }
             document.getElementById('status-message').textContent = "Payment failed!";
             document.getElementById('status-message').style.color = "red";
