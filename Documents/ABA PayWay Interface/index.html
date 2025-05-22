@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment with QR Code</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Scan QR Code to Pay</h1>
+    <div id="qr-container">
+        <img id="qrImage" style="width: auto; height: auto;">
+    </div>
+    <div id="status-message">Waiting for payment...</div>
+
+    <!-- this assume-callback will be removed in production -->
+    <button style="margin-top: 20px;" id="assume-callback" onclick="assumeCallback()">Assume callback</button>
+
+    <footer>
+        <p><i class="fas fa-info-circle"></i> Please scan the QR code with your mobile app to proceed with the payment.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

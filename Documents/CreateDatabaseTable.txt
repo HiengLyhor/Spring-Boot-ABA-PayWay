@@ -1,0 +1,16 @@
+-- Create table user_info
+CREATE TABLE IF NOT EXISTS myapps.user_info
+(
+    user_id SERIAL PRIMARY KEY, -- Automatically generates unique ID using sequence
+    username VARCHAR(50) NOT NULL,
+    exp_date TIMESTAMP NOT NULL,
+    cre_date TIMESTAMP NOT NULL,
+    active BOOLEAN DEFAULT TRUE, 
+    password TEXT NOT NULL, 
+    role VARCHAR(10) NOT NULL, 
+
+    -- Constraints
+    CONSTRAINT "UQ_UserInfo_Username" UNIQUE (username),  -- Ensure username is unique
+    CONSTRAINT "UserInfo_role_check" CHECK (role IN ('ADMIN', 'USER')), -- Role check for 'ADMIN' or 'USER'
+    CONSTRAINT "CHK_UserInfo_Active" CHECK (active IN (TRUE, FALSE)) -- Active should be boolean
+);
