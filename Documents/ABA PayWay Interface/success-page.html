@@ -1,1 +1,107 @@
-<h1>Paid</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .receipt {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .success-icon {
+            color: #4CAF50;
+            font-size: 50px;
+        }
+        .details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="receipt">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Payment Successful</h1>
+        <p>Thank you for your payment!</p>
+        
+        <div class="amount" id="amountDisplay"></div>
+        
+        <div class="details">
+            <div class="detail-row">
+                <span class="detail-label">Transaction ID:</span>
+                <span id="txnId"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span id="date"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span>Completed <i class="fas fa-check" style="color: #4CAF50;"></i></span>
+            </div>
+        </div>
+        
+        <button onclick="window.location.href='index.html'">Make Another Payment</button>
+    </div>
+
+    <script>
+        // Parse the receipt data from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const receiptData = JSON.parse(localStorage.getItem('receiptData'));
+            
+            if (receiptData) {
+                document.getElementById('txnId').textContent = receiptData.txnId;
+                document.getElementById('amountDisplay').textContent = 
+                    `${receiptData.amount} ${receiptData.ccy}`;
+                document.getElementById('date').textContent = receiptData.date;
+                
+                // Clear the stored data after displaying
+                localStorage.removeItem('receiptData');
+            } else {
+                // If no data found, redirect back to home
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

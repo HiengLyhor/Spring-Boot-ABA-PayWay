@@ -1,15 +1,18 @@
 const txnId = getCurrentDateTime(); // This txnId will provide each transaction request
-console.debug("Transaction ID:", txnId);
+var amount;
+var ccy;
 
 async function generateQRCode() {
 
     event.preventDefault();
     
-    var amount = document.getElementById('amount').value;
-    var ccy = document.getElementById('currency').value;
+    amount = document.getElementById('amount').value;
+    ccy = document.getElementById('currency').value;
 
+    console.log("Transaction ID:", txnId);
     console.log("Amount:", amount);
     console.log("Currency:", ccy);
+
     if (!amount || !ccy) {
         return;
     }
@@ -64,14 +67,15 @@ function connectWebSocket() {
                 return; // Ignore messages for different transaction IDs
             }
 
+            console.log("Received payment status:", response);
             if (response.status === 'SUCCESS') {
                 console.log("Payment succeeded!");
-                document.getElementById('status-message').textContent = "Payment succeeded! Redirecting...";
+                document.getElementById('status-message').textContent = "Payment succeeded!";
                 document.getElementById('status-message').style.color = "green";
 
                 // Notify for 1.5 seconds before redirecting
                 setTimeout(function () {
-                    window.location.href = "./success-page.html"; // Redirect to success page
+                    handleSuccessfulPayment(txnId, amount, ccy); // Redirect to success page
                 }, 1500); // 1500 milliseconds = 1.5 seconds
 
             }else {
@@ -85,6 +89,39 @@ function connectWebSocket() {
         document.getElementById('status-message').textContent = "Connection failed. Retrying...";
         setTimeout(connectWebSocket, 5000); // Retry after 5 seconds
     });
+}
+
+function handleSuccessfulPayment(txnId, amount, ccy) {
+    const now = new Date();
+    const formattedDate = formatDateForReceipt(now);
+    
+    localStorage.setItem('receiptData', JSON.stringify({
+        txnId: txnId,
+        amount: amount,
+        ccy: ccy,
+        date: formattedDate
+    }));
+    
+    window.location.href = 'success-page.html';
+}
+
+function formatDateForReceipt(date) {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    
+    return `${day} ${month} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
 // This assume will be removed in production
