@@ -2,6 +2,7 @@ package com.aba_payment.api.controller;
 
 import com.aba_payment.api.dto.aba.CallbackRequest;
 import com.aba_payment.api.service.ABAPayService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,8 @@ public class PaymentController {
     private final ABAPayService abaPayService;
 
     @GetMapping("generate-qr-image")
-    ResponseEntity<byte[]> generateQrImage(@RequestParam double amount, @RequestParam String ccy) {
-        return abaPayService.qrImage(amount, ccy);
+    ResponseEntity<byte[]> generateQrImage(@RequestParam @Valid double amount, @RequestParam @Valid String ccy, @RequestParam @Valid String txnId) {
+        return abaPayService.qrImage(amount, ccy, txnId);
     }
 
     @PostMapping("callback")

@@ -45,9 +45,9 @@ public class ABAPayService {
     // *********************************************************************************** //
     // *********************************************************************************** //
 
-    public ResponseEntity<byte[]> qrImage(double amount, String ccy) {
+    public ResponseEntity<byte[]> qrImage(double amount, String ccy, String txnId) {
         try {
-            GenerateQrResponse exGenerateQrResponse = proceedQrRequest(amount, ccy);
+            GenerateQrResponse exGenerateQrResponse = proceedQrRequest(amount, ccy, txnId);
             if (exGenerateQrResponse == null) return null;
 
             // Check status before assign
@@ -83,7 +83,32 @@ public class ABAPayService {
                 sendPaymentStatus(request.getTran_id(), "FAIL, " + checkTxnResponse.getStatus().getMessage());
                 return;
             }
-            sendPaymentStatus(request.getTran_id(), "SUCCESS");
+
+            if (checkTxnResponse.getData() != null) {
+
+                switch (checkTxnResponse.getData().getPayment_status_code()) {
+                    case 0:
+                        sendPaymentStatus(request.getTran_id(), "SUCCESS");
+                        break;
+                    case 2:
+                        sendPaymentStatus(request.getTran_id(), "PENDING");
+                        break;
+                    case 3:
+                        sendPaymentStatus(request.getTran_id(), "DECLINED");
+                        break;
+                    case 4:
+                        sendPaymentStatus(request.getTran_id(), "REFUNDED");
+                        break;
+                    case 7:
+                        sendPaymentStatus(request.getTran_id(), "CANCELLED");
+                        break;
+                    default:
+                        sendPaymentStatus(request.getTran_id(), "FAILED");
+                        break;
+                }
+
+            }
+
         } catch (Exception e) {
             logger.error("Error processing transaction callback: {}", e.getMessage(), e);
             sendPaymentStatus(request.getTran_id(), "FAIL, " + e.getMessage());
@@ -139,7 +164,7 @@ public class ABAPayService {
         }
     }
 
-    private GenerateQrResponse proceedQrRequest(double amount, String ccy) {
+    private GenerateQrResponse proceedQrRequest(double amount, String ccy, String txnId) {
         try {
             GenerateQrRequest requestBody = new GenerateQrRequest();
             requestBody.setAmount(amount);
@@ -150,7 +175,7 @@ public class ABAPayService {
             requestBody.setPayment_option("abapay_khqr");
             requestBody.setQr_image_template("template6_color"); // Reference: https://developer.payway.com.kh/folder-3158158#customize-khqr-display-optional
             requestBody.setReq_time(dateTimeString());
-            requestBody.setTran_id(dateTimeString());
+            requestBody.setTran_id(txnId);
 
             String hash = generateHashString(requestBody);
             requestBody.setHash(hash);
